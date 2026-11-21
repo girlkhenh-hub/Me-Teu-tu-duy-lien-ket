@@ -16,4 +16,31 @@ function speak(s){if(!soundOn||!('speechSynthesis' in window))return;speechSynth
 function render(){locked=false;const l=levels[index];$('stage').textContent=`Màn ${index+1}/10`;$('score').textContent=`⭐ ${score} điểm`;$('fill').style.width=(index/levels.length*100)+'%';$('title').textContent=l.title;$('prompt').textContent=l.q;$('subject').textContent=l.subject;$('feedback').textContent='';$('next').classList.add('hidden');$('choices').innerHTML='';l.options.forEach(([emoji,label],i)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`${emoji}<span>${label}</span>`;b.onclick=()=>choose(i,b);$('choices').appendChild(b)});speak(l.q)}
 function choose(i,b){if(locked)return;const l=levels[index];if(i===l.answer){locked=true;score+=10;b.classList.add('correct');$('feedback').textContent='🎉 Chính xác! Bé giỏi quá!';speak('Chính xác! Bé giỏi quá!');[...$('choices').children].forEach(x=>x.disabled=true);$('next').classList.remove('hidden');$('score').textContent=`⭐ ${score} điểm`}else{b.classList.add('wrong');$('feedback').textContent='💛 Bé thử lại nhé!';speak('Bé thử lại nhé!');setTimeout(()=>b.classList.remove('wrong'),700)}}
 $('next').onclick=()=>{index++;if(index===levels.length){$('game').classList.add('hidden');$('end').classList.remove('hidden');$('fill').style.width='100%';$('result').textContent=`Bé đạt ${score}/100 điểm. Bé thật tuyệt vời!`;speak('Chúc mừng bé đã hoàn thành trò chơi!')}else render()};$('restart').onclick=()=>{index=0;score=0;$('game').classList.remove('hidden');$('end').classList.add('hidden');render()};$('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊 Bật tiếng':'🔇 Tắt tiếng';if(soundOn)speak(levels[index]?.q||'Bé giỏi quá!');else if('speechSynthesis'in window)speechSynthesis.cancel()};$('start').onclick=()=>{$('welcome').classList.add('hidden');$('playArea').classList.remove('hidden');render();window.scrollTo(0,0)};
-</script></body></html>
+</script>
+
+<script>
+// Hạn chế menu chuột phải
+document.addEventListener("contextmenu", function(e) {
+  e.preventDefault();
+});
+
+// Hạn chế chọn chữ trong game
+document.addEventListener("selectstart", function(e) {
+  e.preventDefault();
+});
+
+// Hạn chế kéo thả nội dung
+document.addEventListener("dragstart", function(e) {
+  e.preventDefault();
+});
+</script>
+
+<style>
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+</style>
+
+</body></html>
